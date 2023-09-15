@@ -4,30 +4,34 @@ import { boldFont } from "../theme";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import useWeb3Store from "../utils/web3store";
-import { TOKEN_CONTRACT_ADDRESS, CONTRACT_ADDRESS, TOKEN_NAME } from "../constants";
+import { WRAPPING_TOKEN_CONTRACT_ADDRESS, STAKING_CONTRACT_ADDRESS, TOKEN_NAME } from "../constants";
 import { useEffect, useState, useRef } from "react";
 import BigNumber from "bignumber.js";
 import Countdown from "react-countdown";
 
 export default function Jackpot() {
   const contract = useWeb3Store((state) => state.contract);
+  const tokenContract = useWeb3Store((state) => state.tokenContract);
+
   const [jackpotAmount, setJackpotAmount] = useState(1305.44);
   const [lastStaker, setLastStaker] = useState("0x0000000000000000000000000000000000000000");
+
+  const [decimals, setDecimals] = useState(18);
+
   const query = useQuery(
     ["jackpotAmount"],
     async () => {
       const amount = await contract.jackpotAmount();
       const lastStaker = await contract.lastStaker();
-      return { amount, lastStaker };
+      const decimal = await tokenContract.decimals();
+
+      return { amount, lastStaker, decimal: JSON.parse(decimal) || 18 };
     },
     {
       onSuccess(data) {
-        setJackpotAmount(
-          BigNumber(data.amount["_hex"])
-            .dividedBy(10 ** 18)
-            .toPrecision(7)
-        );
+        setJackpotAmount(BigNumber(data.amount["_hex"]).dividedBy(Math.pow(10, data.decimal)).toPrecision(7));
         setLastStaker(data.lastStaker);
+        setDecimals(data.decimal);
       },
       onError(error) {
         console.log(error);

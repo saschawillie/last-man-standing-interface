@@ -3,7 +3,7 @@ import { Box, Typography, TextField, Button } from "@mui/material";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import useWeb3Store from "../utils/web3store";
-import { TOKEN_CONTRACT_ADDRESS, CONTRACT_ADDRESS, TOKEN_NAME } from "../constants";
+import { WRAPPING_TOKEN_CONTRACT_ADDRESS, STAKING_CONTRACT_ADDRESS, TOKEN_NAME } from "../constants";
 import { useEffect, useState } from "react";
 import BigNumber from "bignumber.js";
 import { useQueryClient } from "@tanstack/react-query";
@@ -16,19 +16,19 @@ export default function Staker() {
   const queryClient = useQueryClient();
   const [values, setValues] = useState({ stake: 0, unstake: 0 });
   const [amountInvested, setamountInvested] = useState(0);
+  const [decimals, setDecimals] = useState(18);
   const query = useQuery(
     ["stake"],
     async () => {
       const amount = await contract.balances(connectedAccount);
-      return amount;
+      const decimal = await tokenContract.decimals();
+      return { amount, decimal: JSON.parse(decimal) || 18 };
     },
     {
-      onSuccess: (data) => {
-        setamountInvested(
-          BigNumber(data["_hex"])
-            .dividedBy(10 ** 18)
-            .toPrecision(5)
-        );
+      onSuccess: ({ amount, decimal }) => {
+        setDecimals(decimal);
+
+        setamountInvested(BigNumber(amount["_hex"]).dividedBy(Math.pow(10, decimal)).toPrecision(5));
         // setamountInvested(data);
       },
       onError: (error) => {
@@ -40,13 +40,21 @@ export default function Staker() {
   const stake = useMutation(
     async () => {
       if (values.stake == 0) return;
-      const approval = await tokenContract.approve(CONTRACT_ADDRESS, BigInt(values.stake * 1e18), {
-        gasLimit: BigInt(1000000),
-      });
+      const approval = await tokenContract.approve(
+        STAKING_CONTRACT_ADDRESS,
+        BigInt(values.stake * Math.pow(10, decimals)),
+        {
+          gasLimit: BigInt(1000000),
+        }
+      );
       approval.wait();
-      const txn = await contract.stakeTokens(TOKEN_CONTRACT_ADDRESS, BigInt(values.stake * 1e18), {
-        gasLimit: BigInt(1000000),
-      });
+      const txn = await contract.stakeTokens(
+        WRAPPING_TOKEN_CONTRACT_ADDRESS,
+        BigInt(values.stake * Math.pow(10, decimals)),
+        {
+          gasLimit: BigInt(1000000),
+        }
+      );
       await txn.wait();
     },
     {
@@ -62,9 +70,13 @@ export default function Staker() {
   const unstake = useMutation(
     async () => {
       if (values.unstake == 0) return;
-      const txn = await contract.unstakeTokens(TOKEN_CONTRACT_ADDRESS, BigInt(values.unstake * 1e18), {
-        gasLimit: BigInt(1000000),
-      });
+      const txn = await contract.unstakeTokens(
+        WRAPPING_TOKEN_CONTRACT_ADDRESS,
+        BigInt(values.unstake * Math.pow(10, decimals)),
+        {
+          gasLimit: BigInt(1000000),
+        }
+      );
       await txn.wait();
     },
     {

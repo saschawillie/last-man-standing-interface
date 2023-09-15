@@ -36,18 +36,20 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/deploym
 ## Deploy and Run
 
 1. Deploy Token contract: TOKEN_ADDR
-2. Deploy Stacking contract and passing TOKEN_ADDR as parameter: STACKING_ADDR
-3. Init Stacking contract
+2. Init Token contract
+   1. setDevWallet FEE_RECEIVER_ADDR
+3. Deploy Stacking contract and passing TOKEN_ADDR as parameter: STACKING_ADDR
+4. Init Stacking contract
    1. minStakingAmount 100000000000000000000
    2. setAPR 100000
    3. setRewardTimestamp
    4. setSecondsPerRound 300
    5. enableStaking true
    6. enableRewards true
-4. Add Rewards
+5. Add Rewards
    1. Token contract approve STACKING_ADDR 100000000000000000000
    2. addRewards TOKEN_ADDR 100000000000000000000
-5. Stack Token
+6. Stack Token
    1. Token contract approve STACKING_ADDR 100000000000000000000
    2. stakeTokens TOKEN_ADDR 100000000000000000000
 

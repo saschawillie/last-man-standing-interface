@@ -2,7 +2,7 @@ import { Box, Typography, TextField, Button } from "@mui/material";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import useWeb3Store from "../utils/web3store";
-import { TOKEN_CONTRACT_ADDRESS, CONTRACT_ADDRESS, TOKEN_NAME } from "../constants";
+import { WRAPPING_TOKEN_CONTRACT_ADDRESS, STAKING_CONTRACT_ADDRESS, TOKEN_NAME } from "../constants";
 import { useEffect, useState } from "react";
 import { textFieldClasses } from "@mui/material";
 
@@ -26,19 +26,25 @@ export default function Rewards() {
   const [apr, setApr] = useState(0);
   const [totalRewards, setTotalRewards] = useState(1024);
 
-  const [amountInvested, setamountInvested] = useState(0);
+  const [isMeJackpotWinner, setIsMeJackpotWinner] = useState(false);
+  const [decimals, setDecimals] = useState(18);
   const query = useQuery(
     ["apr"],
     async () => {
-      const amount = await contract.apr();
-      // const totalRewards = await contract.stakingReward(connectedAccount);
-      const totalRewards = await contract.getRewards();
-      return { amount, totalRewards };
+      const amount = await contract.getAPR();
+      const isWinner = await contract.isMeJackpotWinner();
+      const totalRewards = await contract.getReward(connectedAccount);
+      const decimal = await tokenContract.decimals();
+      return { amount, isWinner, totalRewards, decimal: JSON.parse(decimal) || 18 };
     },
     {
       onSuccess(data) {
-        setApr(parseInt(JSON.parse(data.amount)));
-        setTotalRewards(JSON.parse(data.totalRewards / 1e18).toPrecision(7));
+        console.log("===", data.isWinner);
+
+        setDecimals(data.decimal);
+        setIsMeJackpotWinner(data.isWinner);
+        setApr(parseInt(JSON.parse(data.amount)) / 100);
+        setTotalRewards(JSON.parse(data.totalRewards / Math.pow(10, data.decimal)).toPrecision(7));
       },
       onError(error) {
         console.log(error);
@@ -48,15 +54,20 @@ export default function Rewards() {
   );
 
   const claim = useMutation(async () => {
-    const txn = await contract.withdrawRewards(TOKEN_CONTRACT_ADDRESS);
-    await txn.wait();
-    return txn.hash;
+    if (isMeJackpotWinner) {
+      const txn = await contract.jackpotWinner(WRAPPING_TOKEN_CONTRACT_ADDRESS);
+      await txn.wait();
+      return txn.hash;
+    }
+
+    alert("You are not the winner!!");
   });
 
   const compound = useMutation(
     async () => {
-      const txn = await contract.compoundRewards();
+      const txn = await contract.updateRewards();
       console.log("compounding rewards");
+
       await txn.wait();
       return txn.hash;
     },
@@ -106,7 +117,7 @@ export default function Rewards() {
           <Button
             variant="contained"
             size="large"
-            onClick={() => claim.mutate()}
+            onClick={() => compound.mutate()}
             sx={{
               bgcolor: "white",
               color: "black",
@@ -115,12 +126,12 @@ export default function Rewards() {
               fontWeight: "900",
             }}
           >
-            Claim
+            Compound
           </Button>
           <Button
             variant="contained"
             size="large"
-            onClick={() => compound.mutate()}
+            onClick={() => claim.mutate()}
             sx={{
               bgcolor: "white",
               color: "black",
@@ -130,7 +141,7 @@ export default function Rewards() {
               fontWeight: "900",
             }}
           >
-            Compound
+            Claim&nbsp;Jackpot
           </Button>
         </Box>
       </Box>
