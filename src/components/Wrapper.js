@@ -13,11 +13,7 @@ export default function Wrapper() {
   const underlyingContract = useWeb3Store((state) => state.underlyingContract);
   const connectedAccount = useWeb3Store((state) => state.connectedAccount);
 
-  const blockNumber = useWeb3Store((state) => state.blockNumber);
-
-  const [apr, setApr] = useState(0);
   const [totalRewards, setTotalRewards] = useState(1024);
-
   const [isMeJackpotWinner, setIsMeJackpotWinner] = useState(false);
   const [decimals, setDecimals] = useState(18);
 
@@ -38,21 +34,15 @@ export default function Wrapper() {
     }
   );
 
-  const query = useQuery(
-    ["apr"],
+  const q2 = useQuery(
+    ["wrap"],
     async () => {
-      const amount = await contract.getAPR();
-      const isWinner = await contract.isMeJackpotWinner();
-      const totalRewards = await contract.getReward(connectedAccount);
       const decimal = await tokenContract.decimals();
       return { amount, isWinner, totalRewards, decimal: JSON.parse(decimal) || 18 };
     },
     {
       onSuccess(data) {
         setDecimals(data.decimal);
-        setIsMeJackpotWinner(data.isWinner);
-        setApr(parseInt(JSON.parse(data.amount)) / 100);
-        setTotalRewards(JSON.parse(data.totalRewards / Math.pow(10, data.decimal)).toPrecision(7));
       },
       onError(error) {
         console.log(error);
@@ -82,7 +72,7 @@ export default function Wrapper() {
     {
       onSuccess: (data) => {
         console.log(data);
-        query.refetch();
+        q2.refetch();
       },
       onError: (error) => {
         console.log(error);

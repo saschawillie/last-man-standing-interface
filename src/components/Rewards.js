@@ -5,6 +5,7 @@ import useWeb3Store from "../utils/web3store";
 import { WRAPPING_TOKEN_CONTRACT_ADDRESS, STAKING_CONTRACT_ADDRESS, TOKEN_NAME } from "../constants";
 import { useEffect, useState } from "react";
 import { textFieldClasses } from "@mui/material";
+import BigNumber from "bignumber.js";
 
 function Timer() {
   return (
@@ -51,18 +52,32 @@ export default function Rewards() {
   const query = useQuery(
     ["apr"],
     async () => {
-      const amount = await contract.getAPR();
+      const apr = await contract.getAPR();
       const isWinner = await contract.isMeJackpotWinner();
       const totalRewards = await contract.getReward(connectedAccount);
       const decimal = await tokenContract.decimals();
-      return { amount, isWinner, totalRewards, decimal: JSON.parse(decimal) || 18 };
+      return { apr, isWinner, totalRewards, decimal: JSON.parse(decimal) || 18 };
     },
     {
       onSuccess(data) {
         setDecimals(data.decimal);
         setIsMeJackpotWinner(data.isWinner);
-        setApr(parseInt(JSON.parse(data.amount)) / 100);
-        setTotalRewards(JSON.parse(data.totalRewards / Math.pow(10, data.decimal)).toPrecision(7));
+
+        let apr = BigNumber(data.apr["_hex"]);
+        if (apr.gte(100000)) {
+          apr = BigNumber(100000);
+        }
+        setApr(apr.toFixed(0));
+
+        let reward = BigNumber(data.totalRewards["_hex"]).div(Math.pow(10, data.decimal));
+        if (reward.lte(0.000001)) {
+          reward = reward.toFixed(2);
+        } else if (reward.lte(100)) {
+          reward = reward.toPrecision(6);
+        } else {
+          reward = reward.toFixed(2);
+        }
+        setTotalRewards(reward);
       },
       onError(error) {
         console.log(error);

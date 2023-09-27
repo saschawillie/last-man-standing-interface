@@ -10,7 +10,7 @@ import StakingABI from "../staking-abi.json";
 import TokenABI from "../token-abi.json";
 import Erc20ABI from "../erc20-abi.json";
 import useWeb3Store from "./web3store";
-import shallow from "zustand/shallow";
+import { shallow } from "zustand/shallow";
 
 const useWeb3 = () => {
   const connectedAccount = useWeb3Store((state) => state.connectedAccount);

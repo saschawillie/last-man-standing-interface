@@ -13,6 +13,7 @@ export default function Staker() {
   const contract = useWeb3Store((state) => state.contract);
   const tokenContract = useWeb3Store((state) => state.tokenContract);
   const connectedAccount = useWeb3Store((state) => state.connectedAccount);
+  
   const queryClient = useQueryClient();
   const [values, setValues] = useState({ stake: 0, unstake: 0 });
   const [amountInvested, setamountInvested] = useState(0);
