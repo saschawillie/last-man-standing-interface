@@ -3,7 +3,7 @@ import { Box, Typography, TextField, Button } from "@mui/material";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import useWeb3Store from "../utils/web3store";
-import { WRAPPING_TOKEN_CONTRACT_ADDRESS, STAKING_CONTRACT_ADDRESS, TOKEN_NAME } from "../constants";
+import { WRAPPING_TOKEN_CONTRACT_ADDRESS, STAKING_CONTRACT_ADDRESS, STAKING_TOKEN_NAME } from "../constants";
 import { useEffect, useState } from "react";
 import BigNumber from "bignumber.js";
 import { useQueryClient } from "@tanstack/react-query";
@@ -13,7 +13,9 @@ export default function Staker() {
   const contract = useWeb3Store((state) => state.contract);
   const tokenContract = useWeb3Store((state) => state.tokenContract);
   const connectedAccount = useWeb3Store((state) => state.connectedAccount);
-  
+
+  const isConnected = useWeb3Store((state) => state.isConnected);
+
   const queryClient = useQueryClient();
   const [values, setValues] = useState({ stake: 0, unstake: 0 });
   const [amountInvested, setamountInvested] = useState(0);
@@ -112,7 +114,7 @@ export default function Staker() {
         >
           <Typography variant="h2" sx={{ lineHeight: 0.8 }}>
             {amountInvested}
-            <span style={{ fontSize: 24, marginLeft: 4 }}>{TOKEN_NAME}</span>
+            <span style={{ fontSize: 24, marginLeft: 4 }}>{STAKING_TOKEN_NAME}</span>
           </Typography>
           <Typography variant="body1">Amount Invested</Typography>
           <Box sx={{ position: "relative", pt: 5, mt: 2 }}>
@@ -132,6 +134,7 @@ export default function Staker() {
             <Button
               variant="contained"
               size="large"
+              disabled={!isConnected}
               onClick={() => stake.mutate()}
               sx={{
                 bgcolor: "white",
@@ -144,7 +147,7 @@ export default function Staker() {
                 fontWeight: "900",
               }}
             >
-              Stake {TOKEN_NAME}
+              Stake {STAKING_TOKEN_NAME}
             </Button>
           </Box>
           <Box sx={{ position: "relative", pt: 5, margin: "auto" }}>
@@ -164,6 +167,7 @@ export default function Staker() {
             <Button
               variant="contained"
               size="large"
+              disabled={!isConnected}
               onClick={() => unstake.mutate()}
               sx={{
                 bgcolor: "white",

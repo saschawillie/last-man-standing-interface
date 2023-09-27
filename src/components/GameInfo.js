@@ -5,7 +5,7 @@ import { boldFont } from "../theme";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import useWeb3Store from "../utils/web3store";
-import { WRAPPING_TOKEN_CONTRACT_ADDRESS, STAKING_CONTRACT_ADDRESS, TOKEN_NAME } from "../constants";
+import { WRAPPING_TOKEN_CONTRACT_ADDRESS, STAKING_CONTRACT_ADDRESS, STAKING_TOKEN_NAME } from "../constants";
 import { useEffect, useState, useRef } from "react";
 import BigNumber from "bignumber.js";
 import Countdown from "react-countdown";
@@ -23,8 +23,8 @@ export default function GameInfo() {
   const [underlyingAmount, setUnderlyingAmount] = useState(0);
   const [totalLockValue, setTotalLockValue] = useState(130544);
 
-  const [tokenSymbol, setTokenSymbol] = useState(TOKEN_NAME);
-  const [underlyingSymbol, setUnderlyingSymbol] = useState(TOKEN_NAME);
+  const [tokenSymbol, setTokenSymbol] = useState(STAKING_TOKEN_NAME);
+  const [underlyingSymbol, setUnderlyingSymbol] = useState(STAKING_TOKEN_NAME);
 
   const [decimals, setDecimals] = useState(18);
 
@@ -116,7 +116,7 @@ export default function GameInfo() {
           <Typography variant="h1" sx={{ fontWeight: "400", fontSize: 60, fontFamily: "Helvetica", lineHeight: 0.8 }}>
             <span style={{ fontSize: 30, marginRight: 8 }}>TVL:</span>
             {totalLockValue}
-            <span style={{ fontSize: 30, marginLeft: 8 }}>{TOKEN_NAME}</span>
+            <span style={{ fontSize: 30, marginLeft: 8 }}>{STAKING_TOKEN_NAME}</span>
           </Typography>
           <Typography variant="h1" sx={{ fontWeight: "400", fontSize: 60, fontFamily: "Helvetica", lineHeight: 0.8 }}>
             <span style={{ fontSize: 30, marginRight: 8 }}>Token:</span>

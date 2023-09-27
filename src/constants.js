@@ -1,5 +1,7 @@
 export const PROJECT_NAME = "Last Man Standing";
-export const TOKEN_NAME = "LMS";
+export const UNDERLYING_TOKEN_NAME = "USDT";
+export const WRAPPING_TOKEN_NAME = "wtLMS";
+export const STAKING_TOKEN_NAME = "LMS";
 
 // local testnet: 31337
 // http://127.0.0.1:8545

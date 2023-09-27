@@ -1,6 +1,6 @@
 import Button from "@mui/material/Button";
 import useWeb3Store from "../utils/web3store";
-import { TOKEN_NAME, UNDERLYING_TOKEN_CONTRACT_ADDRESS, WRAPPING_TOKEN_CONTRACT_ADDRESS } from "../constants";
+import { STAKING_TOKEN_NAME, UNDERLYING_TOKEN_CONTRACT_ADDRESS, WRAPPING_TOKEN_CONTRACT_ADDRESS } from "../constants";
 
 export default function AddWatchTokenButton({ setAccount, onConnect, width }) {
   const isConnected = useWeb3Store((state) => state.isConnected);

@@ -2,7 +2,7 @@ import { Box, Typography, TextField, Button } from "@mui/material";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import useWeb3Store from "../utils/web3store";
-import { WRAPPING_TOKEN_CONTRACT_ADDRESS, STAKING_CONTRACT_ADDRESS, TOKEN_NAME } from "../constants";
+import { WRAPPING_TOKEN_CONTRACT_ADDRESS, STAKING_CONTRACT_ADDRESS, STAKING_TOKEN_NAME } from "../constants";
 import { useEffect, useState } from "react";
 import { textFieldClasses } from "@mui/material";
 import { ConnectWalletButton, AddWatchTokenButton, WrapButton, UnwrapButton } from "./";
@@ -96,7 +96,7 @@ export default function Wrapper() {
         }}
       >
         <Typography variant="h2" sx={{ lineHeight: 0.8 }}>
-          <span style={{ fontSize: 24, marginLeft: 4 }}>{TOKEN_NAME} Token Wrapper</span>
+          <span style={{ fontSize: 24, marginLeft: 4 }}>{STAKING_TOKEN_NAME} Token Wrapper</span>
         </Typography>
 
         <WrapButton width={"100%"} />

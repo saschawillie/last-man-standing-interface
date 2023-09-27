@@ -4,7 +4,7 @@ import { boldFont } from "../theme";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import useWeb3Store from "../utils/web3store";
-import { WRAPPING_TOKEN_CONTRACT_ADDRESS, STAKING_CONTRACT_ADDRESS, TOKEN_NAME } from "../constants";
+import { WRAPPING_TOKEN_CONTRACT_ADDRESS, STAKING_CONTRACT_ADDRESS, STAKING_TOKEN_NAME } from "../constants";
 import { useEffect, useState, useRef } from "react";
 import BigNumber from "bignumber.js";
 import Countdown from "react-countdown";
@@ -76,7 +76,7 @@ export default function Jackpot() {
       >
         <Box sx={{ mt: -3 }}>
           {/* <Typography variant="h1" sx={{ fontWeight: "900", fontFamily: "Helvetica, serif", fontSize: 250 }}>
-            <i>{TOKEN_NAME}</i>
+            <i>{STAKING_TOKEN_NAME}</i>
           </Typography> */}
         </Box>
         <Box sx={{ ml: 2 }}>
@@ -85,7 +85,7 @@ export default function Jackpot() {
           </Typography>
           <Typography variant="h1" sx={{ fontWeight: "900", fontSize: 180, fontFamily: "Helvetica", lineHeight: 0.8 }}>
             {jackpotAmount}
-            <span style={{ fontSize: 102, marginLeft: 8 }}>{TOKEN_NAME}</span>
+            <span style={{ fontSize: 102, marginLeft: 8 }}>{STAKING_TOKEN_NAME}</span>
           </Typography>
 
           <Typography variant="h4" sx={{ fontWeight: "900", ml: 3, mt: 1 }}>
@@ -114,13 +114,13 @@ export default function Jackpot() {
           </Typography>
           <Typography variant="h1" sx={{ fontWeight: "900", fontSize: 180, fontFamily: "Helvetica", lineHeight: 0.8 }}>
             {totalLockValue}
-            <span style={{ fontSize: 102, marginLeft: 8 }}>{TOKEN_NAME}</span>
+            <span style={{ fontSize: 102, marginLeft: 8 }}>{STAKING_TOKEN_NAME}</span>
           </Typography> */}
 
           {/* <Typography variant="h2" sx={{ lineHeight: 0.8 }}>
             <span style={{ fontSize: 45, marginRight: 8 }}>TVL:</span>
             {totalLockValue}
-            <span style={{ fontSize: 45, marginLeft: 8 }}>{TOKEN_NAME}</span>
+            <span style={{ fontSize: 45, marginLeft: 8 }}>{STAKING_TOKEN_NAME}</span>
           </Typography> */}
         </Box>
         {/* <Box
@@ -140,7 +140,7 @@ export default function Jackpot() {
           <Typography variant="h2" sx={{ lineHeight: 0.8 }}>
             <span style={{ fontSize: 45, marginRight: 8 }}>TVL:</span>
             {totalLockValue}
-            <span style={{ fontSize: 45, marginLeft: 8 }}>{TOKEN_NAME}</span>
+            <span style={{ fontSize: 45, marginLeft: 8 }}>{STAKING_TOKEN_NAME}</span>
           </Typography>
         </Box> */}
       </Box>

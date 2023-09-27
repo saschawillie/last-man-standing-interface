@@ -2,7 +2,7 @@ import { Box, Typography, TextField, Button } from "@mui/material";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import useWeb3Store from "../utils/web3store";
-import { WRAPPING_TOKEN_CONTRACT_ADDRESS, STAKING_CONTRACT_ADDRESS, TOKEN_NAME } from "../constants";
+import { WRAPPING_TOKEN_CONTRACT_ADDRESS, STAKING_CONTRACT_ADDRESS, STAKING_TOKEN_NAME } from "../constants";
 import { useEffect, useState } from "react";
 import { textFieldClasses } from "@mui/material";
 import BigNumber from "bignumber.js";
@@ -25,6 +25,8 @@ export default function Rewards() {
   const tokenContract = useWeb3Store((state) => state.tokenContract);
   const connectedAccount = useWeb3Store((state) => state.connectedAccount);
   const blockNumber = useWeb3Store((state) => state.blockNumber);
+
+  const isConnected = useWeb3Store((state) => state.isConnected);
 
   const [apr, setApr] = useState(0);
   const [totalRewards, setTotalRewards] = useState(1024);
@@ -143,13 +145,14 @@ export default function Rewards() {
             {totalRewards}
           </Typography>
           <Typography variant="h4" sx={{ ml: 2 }}>
-            {TOKEN_NAME}
+            {STAKING_TOKEN_NAME}
           </Typography>
         </Box>
         <Box sx={{ display: "flex", alignItems: "flex-end", mt: 2, marginTop: 8 }}>
           <Button
             variant="contained"
             size="large"
+            disabled={!isConnected}
             onClick={() => compound.mutate()}
             sx={{
               bgcolor: "white",
@@ -164,6 +167,7 @@ export default function Rewards() {
           <Button
             variant="contained"
             size="large"
+            disabled={!isConnected}
             onClick={() => claim.mutate()}
             sx={{
               bgcolor: "white",

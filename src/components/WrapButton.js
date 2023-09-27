@@ -2,7 +2,7 @@ import { Button, TextField, Box } from "@mui/material";
 import useWeb3Store from "../utils/web3store";
 import { useEffect, useState, useRef } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { TOKEN_NAME, WRAPPING_TOKEN_CONTRACT_ADDRESS, UNDERLYING_TOKEN_CONTRACT_ADDRESS } from "../constants";
+import { STAKING_TOKEN_NAME, WRAPPING_TOKEN_CONTRACT_ADDRESS, UNDERLYING_TOKEN_CONTRACT_ADDRESS } from "../constants";
 import BigNumber from "bignumber.js";
 
 export default function WrapButton({ setAccount, onConnect, width }) {
@@ -93,7 +93,7 @@ export default function WrapButton({ setAccount, onConnect, width }) {
         disabled={!isConnected}
         onClick={() => wrap.mutate()}
       >
-        Wrap {TOKEN_NAME}
+        Wrap {STAKING_TOKEN_NAME}
       </Button>
     </Box>
   );

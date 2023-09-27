@@ -2,7 +2,7 @@ import { Button, TextField, Box } from "@mui/material";
 import useWeb3Store from "../utils/web3store";
 import { useEffect, useState, useRef } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { TOKEN_NAME, WRAPPING_TOKEN_CONTRACT_ADDRESS } from "../constants";
+import { STAKING_TOKEN_NAME, WRAPPING_TOKEN_CONTRACT_ADDRESS } from "../constants";
 import BigNumber from "bignumber.js";
 
 export default function UnwrapButton({ setAccount, onConnect, width }) {
@@ -83,7 +83,7 @@ export default function UnwrapButton({ setAccount, onConnect, width }) {
         disabled={!isConnected}
         onClick={() => unwrap.mutate()}
       >
-        Unwrap {TOKEN_NAME}
+        Unwrap {STAKING_TOKEN_NAME}
       </Button>
     </Box>
   );
