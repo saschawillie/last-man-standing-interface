@@ -34,7 +34,7 @@ export default function Staker() {
       onError: (error) => {
         console.log(error);
       },
-      enabled: !!contract && !!connectedAccount,
+      enabled: !!connectedAccount && !!contract && !!tokenContract,
     }
   );
   const stake = useMutation(
@@ -69,14 +69,19 @@ export default function Staker() {
   );
   const unstake = useMutation(
     async () => {
-      if (values.unstake == 0) return;
-      const txn = await contract.unstakeTokens(
-        WRAPPING_TOKEN_CONTRACT_ADDRESS,
-        BigInt(values.unstake * Math.pow(10, decimals)),
-        {
-          gasLimit: BigInt(1000000),
-        }
-      );
+      // if (values.unstake == 0) return;
+      // const txn = await contract.unstakeTokens(
+      //   WRAPPING_TOKEN_CONTRACT_ADDRESS,
+      //   BigInt(values.unstake * Math.pow(10, decimals)),
+      //   {
+      //     gasLimit: BigInt(1000000),
+      //   }
+      // );
+      // await txn.wait();
+
+      const txn = await contract.unstakeAllTokens(WRAPPING_TOKEN_CONTRACT_ADDRESS, {
+        gasLimit: BigInt(1000000),
+      });
       await txn.wait();
     },
     {
@@ -92,7 +97,7 @@ export default function Staker() {
         sx={{
           border: "1px solid white",
           height: "100%",
-          width: 350,
+          width: 300,
           borderRadius: 5,
           p: 2,
           position: "relative",
@@ -138,18 +143,18 @@ export default function Staker() {
                 fontWeight: "900",
               }}
             >
-              Stake
+              Stake {TOKEN_NAME}
             </Button>
           </Box>
-          <Box sx={{ position: "relative", pt: 5 }}>
+          <Box sx={{ position: "relative", pt: 5, margin: "auto" }}>
             <TextField
               id="filled-basic"
               variant="standard"
               color="secondary"
-              focused
-              value={values.unstake}
-              inputProps={{ inputMode: "numeric", pattern: "[0-9]*" }}
-              onChange={(e) => setValues({ ...values, unstake: e.target.value })}
+              // focused
+              // value={values.unstake}
+              // inputProps={{ inputMode: "numeric", pattern: "[0-9]*" }}
+              // onChange={(e) => setValues({ ...values, unstake: e.target.value })}
               sx={{
                 width: "100%",
                 fontSize: 70,
@@ -166,11 +171,12 @@ export default function Staker() {
                 position: "absolute",
                 right: 0,
                 py: 0.5,
+                width: "100%",
                 bottom: 10,
                 fontWeight: "900",
               }}
             >
-              Unstake
+              Unstake & Claim All
             </Button>
           </Box>
         </Box>
@@ -181,22 +187,23 @@ export default function Staker() {
 }
 
 function Timer() {
-  const [stakingTime, setStakingTime] = useState(0);
-  const contract = useWeb3Store((state) => state.contract);
   const connectedAccount = useWeb3Store((state) => state.connectedAccount);
+
+  const contract = useWeb3Store((state) => state.contract);
   const blockTimestamp = useWeb3Store((state) => state.blockTimestamp);
+
+  const [stakingTime, setStakingTime] = useState(0);
   const query = useQuery(
     ["time", "staking"],
     async () => {
-      console.log("querying staking time");
-      const amount = await contract.minimumStakingTime(connectedAccount);
-      return amount;
+      const tm = await contract.minimumStakingTime(connectedAccount);
+      return { tm };
     },
     {
       enabled: !!contract,
       onSuccess(data) {
-        const difference = BigNumber(data["_hex"]).minus(blockTimestamp).toNumber();
-        if (difference < 0) {
+        const difference = BigNumber(data.tm["_hex"]).minus(blockTimestamp).toNumber();
+        if (difference < 0 || blockTimestamp <= 0) {
           console.log("staking time is less than 0");
           setStakingTime(0);
           return;

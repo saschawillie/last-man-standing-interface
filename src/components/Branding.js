@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Box, Typography, TextField, Button } from "@mui/material";
-import { ConnectWalletButton } from "./";
+import { ConnectWalletButton, AddWatchTokenButton, WrapButton, UnwrapButton } from "./";
 
 export default function Branding() {
   return (
@@ -9,7 +9,7 @@ export default function Branding() {
         sx={{
           // border: "1px solid white",
           height: "100%",
-          width: 350,
+          width: 300,
           borderRadius: 5,
           p: 4,
           position: "relative",
@@ -50,7 +50,8 @@ export default function Branding() {
         <Typography variant="h1" sx={{ lineHeight: 1, fontSize: 50, fontWeight: "900", mb: 2 }}>
           STANDING
         </Typography>
-        <ConnectWalletButton width={"70%"} />
+        <ConnectWalletButton width={"85%"} />
+        <AddWatchTokenButton width={"85%"} />
       </Box>
     </Box>
   );

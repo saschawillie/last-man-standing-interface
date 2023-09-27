@@ -5,24 +5,14 @@ import useWeb3Store from "../utils/web3store";
 import { WRAPPING_TOKEN_CONTRACT_ADDRESS, STAKING_CONTRACT_ADDRESS, TOKEN_NAME } from "../constants";
 import { useEffect, useState } from "react";
 import { textFieldClasses } from "@mui/material";
+import { ConnectWalletButton, AddWatchTokenButton, WrapButton, UnwrapButton } from "./";
 
-function Timer() {
-  return (
-    <Box
-      sx={{
-        position: "absolute",
-        right: 10,
-        top: 10,
-      }}
-    >
-      <AccessTimeIcon sx={{ fontSize: 50 }} />
-    </Box>
-  );
-}
-export default function Rewards() {
+export default function Wrapper() {
   const contract = useWeb3Store((state) => state.contract);
   const tokenContract = useWeb3Store((state) => state.tokenContract);
+  const underlyingContract = useWeb3Store((state) => state.underlyingContract);
   const connectedAccount = useWeb3Store((state) => state.connectedAccount);
+
   const blockNumber = useWeb3Store((state) => state.blockNumber);
 
   const [apr, setApr] = useState(0);
@@ -115,53 +105,12 @@ export default function Rewards() {
           justifyContent: "center",
         }}
       >
-        <Box component="span" sx={{ display: "flex", alignItems: "flex-end", mb: 1, marginBottom: 5 }}>
-          <Typography variant="h2" sx={{ lineHeight: 0.7, fontSize: 50 }}>
-            {apr}%
-          </Typography>
-          <Typography variant="h6" sx={{ ml: 2 }}>
-            APY
-          </Typography>
-        </Box>
-        <Box component="span" sx={{ display: "flex", alignItems: "flex-end", mt: 2 }}>
-          <Typography variant="h2" sx={{ lineHeight: 0.7, fontSize: 50 }}>
-            {totalRewards}
-          </Typography>
-          <Typography variant="h4" sx={{ ml: 2 }}>
-            {TOKEN_NAME}
-          </Typography>
-        </Box>
-        <Box sx={{ display: "flex", alignItems: "flex-end", mt: 2, marginTop: 8 }}>
-          <Button
-            variant="contained"
-            size="large"
-            onClick={() => compound.mutate()}
-            sx={{
-              bgcolor: "white",
-              color: "black",
-              borderRadius: 5,
-              py: 0.5,
-              fontWeight: "900",
-            }}
-          >
-            Compound
-          </Button>
-          <Button
-            variant="contained"
-            size="large"
-            onClick={() => claim.mutate()}
-            sx={{
-              bgcolor: "white",
-              color: "black",
-              borderRadius: 5,
-              ml: 2,
-              py: 0.5,
-              fontWeight: "900",
-            }}
-          >
-            Claim&nbsp;Jackpot
-          </Button>
-        </Box>
+        <Typography variant="h2" sx={{ lineHeight: 0.8 }}>
+          <span style={{ fontSize: 24, marginLeft: 4 }}>{TOKEN_NAME} Token Wrapper</span>
+        </Typography>
+
+        <WrapButton width={"100%"} />
+        <UnwrapButton width={"100%"} />
       </Box>
     </Box>
   );

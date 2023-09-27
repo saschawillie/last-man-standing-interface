@@ -417,19 +417,6 @@
   },
   {
     "inputs": [],
-    "name": "totalBalance",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
     "name": "totalCompound",
     "outputs": [
       {
@@ -481,6 +468,19 @@
       }
     ],
     "name": "transferAccidentallyLockedTokens",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "contract IERC20",
+        "name": "token",
+        "type": "address"
+      }
+    ],
+    "name": "unstakeAllTokens",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

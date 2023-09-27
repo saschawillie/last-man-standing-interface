@@ -26,13 +26,17 @@ const useWeb3Store = create(
     setConnectedAccount: (pay) => set((state) => ({ connectedAccount: pay })),
     //////////////////////
     contract: null,
+    setContract: (pay) => set((state) => ({ contract: pay })),
     tokenContract: null,
+    setTokenContract: (pay) => set((state) => ({ tokenContract: pay })),
+    underlyingContract: null,
+    setUnderlyingContract: (pay) => set((state) => ({ underlyingContract: pay })),
     balance: 0,
+    setBalance: (pay) => set((state) => ({ balance: pay })),
     blockTimestamp: 0,
     setBlockTimestamp: (pay) => set((state) => ({ blockTimestamp: pay })),
-    setContract: (pay) => set((state) => ({contract: pay})),
-    setTokenContract: (pay) => set((state) => ({tokenContract: pay})),
-    setBalance: (pay) => set(state => ({balance: pay}))
+    blockNumber: 0,
+    setBlockNumber: (pay) => set((state) => ({ blockNumber: pay })),
   }))
 );
 

@@ -14,6 +14,7 @@ export default function Jackpot() {
   const tokenContract = useWeb3Store((state) => state.tokenContract);
 
   const [jackpotAmount, setJackpotAmount] = useState(1305.44);
+  const [totalLockValue, setTotalLockValue] = useState(130544);
   const [lastStaker, setLastStaker] = useState("0x0000000000000000000000000000000000000000");
 
   const [decimals, setDecimals] = useState(18);
@@ -25,18 +26,38 @@ export default function Jackpot() {
       const lastStaker = await contract.lastStaker();
       const decimal = await tokenContract.decimals();
 
-      return { amount, lastStaker, decimal: JSON.parse(decimal) || 18 };
+      const leftoverRewards = await contract.leftoverRewards();
+      const totalCompound = await contract.totalCompound();
+
+      return { amount, leftoverRewards, totalCompound, lastStaker, decimal: JSON.parse(decimal) || 18 };
     },
     {
       onSuccess(data) {
-        setJackpotAmount(BigNumber(data.amount["_hex"]).dividedBy(Math.pow(10, data.decimal)).toPrecision(7));
+        let amount = BigNumber(data.amount["_hex"]).dividedBy(Math.pow(10, data.decimal));
+
+        if (amount.isGreaterThan(100)) {
+          amount = amount.toFixed(2);
+        } else if (amount.isGreaterThan(1)) {
+          amount = amount.toFixed(4);
+        } else if (amount.isLessThan(1)) {
+          amount = amount.toPrecision(6);
+        }
+        setJackpotAmount(amount);
+
+        let tvl = BigNumber(0)
+          .plus(data.leftoverRewards["_hex"])
+          .plus(data.totalCompound["_hex"])
+          .dividedBy(Math.pow(10, data.decimal))
+          .toFixed(2);
+        setTotalLockValue(tvl);
+
         setLastStaker(data.lastStaker);
         setDecimals(data.decimal);
       },
       onError(error) {
         console.log(error);
       },
-      enabled: !!contract,
+      enabled: !!contract && !!tokenContract,
     }
   );
   return (
@@ -54,9 +75,9 @@ export default function Jackpot() {
         }}
       >
         <Box sx={{ mt: -3 }}>
-          {/* <Typography variant="h1" sx={{ fontWeight: "900", fontFamily: 'Helvetica, serif', fontSize: 250 }}>
-                        <i>{TOKEN_NAME}</i>
-                    </Typography> */}
+          {/* <Typography variant="h1" sx={{ fontWeight: "900", fontFamily: "Helvetica, serif", fontSize: 250 }}>
+            <i>{TOKEN_NAME}</i>
+          </Typography> */}
         </Box>
         <Box sx={{ ml: 2 }}>
           <Typography variant="h4" sx={{ textTransform: "uppercase", fontFamily: boldFont.style.fontFamily, ml: 3 }}>
@@ -66,36 +87,83 @@ export default function Jackpot() {
             {jackpotAmount}
             <span style={{ fontSize: 102, marginLeft: 8 }}>{TOKEN_NAME}</span>
           </Typography>
+
           <Typography variant="h4" sx={{ fontWeight: "900", ml: 3, mt: 1 }}>
             in <Clock /> to
             <Box component="span" sx={{ color: "primary.main" }}>
-              {" "}
               {lastStaker.slice(0, 10)}...{lastStaker.substring(lastStaker.length - 3)}
             </Box>
           </Typography>
         </Box>
+        <Box
+          sx={{
+            ml: 2,
+            height: "100%",
+            width: 300,
+            borderRadius: 5,
+            p: 4,
+            position: "relative",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            marginLeft: 5,
+          }}
+        >
+          {/* <Typography variant="h4" sx={{ textTransform: "uppercase", fontFamily: boldFont.style.fontFamily, ml: 3 }}>
+            TVL
+          </Typography>
+          <Typography variant="h1" sx={{ fontWeight: "900", fontSize: 180, fontFamily: "Helvetica", lineHeight: 0.8 }}>
+            {totalLockValue}
+            <span style={{ fontSize: 102, marginLeft: 8 }}>{TOKEN_NAME}</span>
+          </Typography> */}
+
+          {/* <Typography variant="h2" sx={{ lineHeight: 0.8 }}>
+            <span style={{ fontSize: 45, marginRight: 8 }}>TVL:</span>
+            {totalLockValue}
+            <span style={{ fontSize: 45, marginLeft: 8 }}>{TOKEN_NAME}</span>
+          </Typography> */}
+        </Box>
+        {/* <Box
+          sx={{
+            border: "1px solid white",
+            height: "100%",
+            width: 300,
+            borderRadius: 5,
+            p: 4,
+            position: "relative",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            marginLeft: 5,
+          }}
+        >
+          <Typography variant="h2" sx={{ lineHeight: 0.8 }}>
+            <span style={{ fontSize: 45, marginRight: 8 }}>TVL:</span>
+            {totalLockValue}
+            <span style={{ fontSize: 45, marginLeft: 8 }}>{TOKEN_NAME}</span>
+          </Typography>
+        </Box> */}
       </Box>
     </Box>
   );
 }
 
 const Clock = () => {
-  const [jackpotTime, setJackpotTime] = useState(0);
   const contract = useWeb3Store((state) => state.contract);
+
+  const [jackpotTime, setJackpotTime] = useState(0);
   const blockTimestamp = useWeb3Store((state) => state.blockTimestamp);
+
   const query = useQuery(
     ["time", "jackpot"],
     async () => {
-      console.log("querying jackpot time");
-      const amount = await contract.jackpotTime();
-      return amount;
+      const tm = await contract.jackpotTime();
+      return { tm };
     },
     {
       enabled: !!contract,
       onSuccess(data) {
-        console.log("jackpot time", BigNumber(data["_hex"]).toNumber(), "block time", blockTimestamp);
-        const difference = BigNumber(data["_hex"]).minus(blockTimestamp).toNumber();
-        console.log("difference", difference);
+        const difference = BigNumber(data.tm["_hex"]).minus(blockTimestamp).toNumber();
 
         if (difference < 0) {
           console.log("jackpot time is less than 0");
